@@ -1,0 +1,91 @@
+---
+- hosts: all
+  become: true
+  gather_facts: false
+
+  pre_tasks:
+    - name: Update apt cache if needed.
+      apt: update_cache=true cache_valid_time=3600
+
+  tasks:
+    - name: Install prerequsiste packages
+      apt:
+        pkg:
+          - aptitude
+          - apt-transport-https 
+          - ca-certificates 
+          - curl 
+          - gnupg-agent 
+          - software-properties-common
+        state: latest
+
+    - name: Remove default docker if present
+      apt:
+        state: absent
+        pkg:
+          - docker
+          - docker-engine
+          - docker.io
+          - containerd 
+          - runc
+
+      # Add ansible repository key
+    - name: Add the Ansible GPG key
+      apt_key:
+        keyserver: keyserver.ubuntu.com
+        id: 93C4A3FD7BB9C367
+        state: present
+
+    # Add ansible repository into sources list
+    - name: Add the Ansible repo to sources
+      apt_repository:
+        repo: deb http://ppa.launchpad.net/ansible/ansible/ubuntu bionic main
+        state: present
+        filename: ansible
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+        filename: docker-ce
+
+    - name: Install Docker CE, Ansible, NodeJS, NPM, Git, and utilities
+      apt:
+        pkg:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - ansible
+          - nodejs
+          - npm
+          - python3-pip
+          - git
+          - pwgen
+          - vim
+        state: latest
+        update_cache: yes
+
+    - name: Install docker-compose
+      remote_user: ubuntu
+      get_url: 
+        url : https://github.com/docker/compose/releases/download/1.26.2/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: 'u+x,g+x'
+
+    - name: Configure npm globally
+      npm:
+        name: npm
+        state: present
+        global: yes
+
+    - name: Install docker-py and docker-compose python module 
+      pip:
+        name:
+          - requests==2.14.2
+          - docker-compose==1.26.2
+        state: present

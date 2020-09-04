@@ -1,3 +1,3 @@
-# Ansible Development in a Docker Container
+# Prepare Ubuntu 18:04 for AWX
 
-This template will create an Ansible Development Directory in a **Linux OS** docker container in Visual Studio Code using my [Docker image containing Ansible](https://github.com/psmware-ltd/devops-images)
+A small Visual Studio Code/Docker project that will prepare an Ubuntu 18.04 server for AWX installation.  To use with any other server, simply edit the [awx.yml](ansible/inventory/host_vars/awx.yml) file to match your server's details, and run the playbook.

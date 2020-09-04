@@ -1,0 +1,7 @@
+all:
+  children:
+    psmware:
+      children:
+        lab:
+          hosts:
+            awx:
